@@ -3,29 +3,23 @@
 A worked setup: one small Linux server in your tailnet gives agents your IMAP mail and a password vault. Each permission is enforced by the server holding the data, so an agent that gets prompt-injected by an email still can't send mail or change a password.
 
 ```
-agent ──stdio──▶ tailnet-mcp (tag:my-agent) ══▶ server :8443/<secret> ──▶ mail MCP     (draft-only)
+agent ──stdio──▶ tailnet-mcp (tag:my-agent) ══▶ server :8443/<secret> ──▶ draftmail    (read + draft)
 agent ──stdio──▶ tailnet-mcp (tag:my-agent) ══▶ server :8444/<secret> ──▶ vault MCP    (view-only account)
 your devices ══════════════════════════════════▶ server :443           ──▶ Vaultwarden
 ```
 
 It runs on a 1 GB VPS. These are the pieces from a working deployment; adjust paths and ports to taste.
 
-## Mail: drafts only
+## Mail: read and draft, never send
 
-[better-email-mcp](https://github.com/zedong-peng/better-email-mcp) (a fork of [n24q02m/email](https://github.com/n24q02m/email)) speaks IMAP/SMTP to any provider with app passwords. With `EMAIL_MCP_DRAFT_ONLY=1`, new mail, replies and forwards are saved to Drafts and never sent, and move, archive and trash are taken off the tool list and refused if called anyway. You read the drafts and send them yourself.
+[draftmail](https://github.com/zedong-peng/draftmail) has three tools: search, read and draft. A draft (new, reply or forward) goes to your Drafts folder; you read it and press send yourself. There is no code to send, move or delete, so there is nothing to misconfigure. It is one static binary and needs only IMAP.
 
 ```bash
-npm install -g --prefix /opt/mcp/mail @n24q02m/email   # or `npm pack` the fork
-cat > /etc/mcp/mail.env <<'EOF'
-EMAIL_CREDENTIALS='me@icloud.com:app-password,me@uni.edu:password:imap.uni.edu'
-HOST=127.0.0.1
-PORT=18443
-MCP_TRANSPORT=http
-EMAIL_MCP_DRAFT_ONLY=1
-EOF
+EMAIL_CREDENTIALS='me@icloud.com:app-password,me@uni.edu:password:imap.uni.edu' \
+  draftmail -http 127.0.0.1:18443 -allow-host server.tailnet.ts.net
 ```
 
-Unit: [mail-mcp.service](mail-mcp.service).
+Run it as a systemd service with the credentials in an `EnvironmentFile`.
 
 ## Passwords: a view-only account
 
