@@ -16,6 +16,8 @@ Download a static binary for linux or darwin, amd64 or arm64, from [Releases](ht
 CGO_ENABLED=0 go install github.com/zedong-peng/tailnet-mcp@latest
 ```
 
+Or run the image `ghcr.io/zedong-peng/tailnet-mcp` with a volume on `/home/nonroot/.local/state/tailnet-mcp`. It is also listed in the [MCP Registry](https://registry.modelcontextprotocol.io) as `io.github.zedong-peng/tailnet-mcp`.
+
 ## Use
 
 1. Publish the server to the tailnet only, on a path nobody can guess:
@@ -84,4 +86,4 @@ go test -race ./...
 CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" .
 ```
 
-Tagging `v*` builds the four binaries and publishes a release.
+Tagging `v*` publishes the four binaries, the image and the registry entry.

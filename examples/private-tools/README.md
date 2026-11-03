@@ -3,8 +3,8 @@
 A worked setup: one small Linux server in your tailnet gives agents your IMAP mail and a password vault. Each permission is enforced by the server holding the data, so an agent that gets prompt-injected by an email still can't send mail or change a password.
 
 ```
-agent ──stdio──▶ tailnet-mcp (tag:my-agent) ══▶ server :8443/<secret> ──▶ draftmail    (read + draft)
-agent ──stdio──▶ tailnet-mcp (tag:my-agent) ══▶ server :8444/<secret> ──▶ vault MCP    (view-only account)
+agent ──stdio──▶ tailnet-mcp (tag:my-agent) ══▶ server :8443/<secret> ──▶ imap-draft-mcp (read + draft)
+agent ──stdio──▶ tailnet-mcp (tag:my-agent) ══▶ server :8444/<secret> ──▶ vault MCP      (view-only account)
 your devices ══════════════════════════════════▶ server :443           ──▶ Vaultwarden
 ```
 
@@ -12,11 +12,11 @@ It runs on a 1 GB VPS. These are the pieces from a working deployment; adjust pa
 
 ## Mail: read and draft, never send
 
-[draftmail](https://github.com/zedong-peng/draftmail) has three tools: search, read and draft. A draft (new, reply or forward) goes to your Drafts folder; you read it and press send yourself. There is no code to send, move or delete, so there is nothing to misconfigure. It is one static binary and needs only IMAP.
+[imap-draft-mcp](https://github.com/zedong-peng/imap-draft-mcp) has three tools: search, read and draft. A draft (new, reply or forward) goes to your Drafts folder; you read it and press send yourself. There is no code to send, move or delete, so there is nothing to misconfigure. It is one static binary and needs only IMAP.
 
 ```bash
 EMAIL_CREDENTIALS='me@icloud.com:app-password,me@uni.edu:password:imap.uni.edu' \
-  draftmail -http 127.0.0.1:18443 -allow-host server.tailnet.ts.net
+  imap-draft-mcp -http 127.0.0.1:18443 -allow-host server.tailnet.ts.net
 ```
 
 Run it as a systemd service with the credentials in an `EnvironmentFile`.

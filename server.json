@@ -1,0 +1,49 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.zedong-peng/tailnet-mcp",
+  "title": "Tailnet MCP bridge",
+  "description": "Reach an MCP server inside your Tailscale tailnet from an agent's sandbox, over stdio.",
+  "repository": {
+    "url": "https://github.com/zedong-peng/tailnet-mcp",
+    "source": "github"
+  },
+  "version": "0.0.0",
+  "packages": [
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/zedong-peng/tailnet-mcp:0.0.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "runtimeArguments": [
+        {
+          "type": "named",
+          "name": "-v",
+          "description": "Keeps the node key, so the auth key is needed only once",
+          "value": "tailnet-mcp:/home/nonroot/.local/state/tailnet-mcp"
+        }
+      ],
+      "packageArguments": [
+        {
+          "type": "named",
+          "name": "-url",
+          "description": "MCP endpoint inside the tailnet, e.g. https://server.tailnet.ts.net:8443/mcp",
+          "isRequired": true
+        },
+        {
+          "type": "named",
+          "name": "-hostname",
+          "description": "Node name in the tailnet; a different one per server",
+          "default": "tailnet-mcp"
+        }
+      ],
+      "environmentVariables": [
+        {
+          "name": "TS_AUTHKEY",
+          "description": "Tagged, pre-authorized auth key; only needed the first time",
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
