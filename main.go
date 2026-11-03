@@ -29,15 +29,23 @@ import (
 	"tailscale.com/tsnet"
 )
 
+// version is set at release time with -ldflags "-X main.version=...".
+var version = "dev"
+
 func main() {
 	url := flag.String("url", "", "MCP endpoint inside the tailnet, e.g. https://host.tailnet.ts.net:8443/mcp")
-	hostname := flag.String("hostname", "tailnet-mcp", "node name in the tailnet")
+	hostname := flag.String("hostname", "tailnet-mcp", "node name in the tailnet; use a different one per server")
 	stateDir := flag.String("state", "", "tsnet state directory (default ~/.local/state/tailnet-mcp/<hostname>)")
 	check := flag.Bool("check", false, "connect, list the server's tools on stderr, and exit")
 	verbose := flag.Bool("v", false, "log tsnet internals to stderr")
+	showVersion := flag.Bool("version", false, "print the version and exit")
 	flag.Parse()
 	log.SetFlags(0)
 	log.SetPrefix("tailnet-mcp: ")
+	if *showVersion {
+		fmt.Println("tailnet-mcp", version)
+		return
+	}
 	if *url == "" {
 		log.Fatal("-url is required")
 	}

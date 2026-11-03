@@ -1,0 +1,27 @@
+[Unit]
+Description=Vault MCP for agent %i
+After=vaultwarden.service
+Requires=vaultwarden.service
+
+[Service]
+User=mcp
+Group=mcp
+Environment=HOME=/var/lib/mcp
+Environment=BITWARDENCLI_APPDATA_DIR=/var/lib/mcp/bw-%i
+EnvironmentFile=/etc/mcp/vault-%i.env
+ExecStart=/opt/mcp/vault-mcp.sh
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/mcp
+MemoryMax=600M
+# Nothing in or out but loopback and this host's own tailnet address, where tailscale serve
+# terminates TLS for Vaultwarden (add it in a drop-in: IPAddressAllow=<tailscale ip>).
+IPAddressDeny=any
+IPAddressAllow=localhost
+
+[Install]
+WantedBy=multi-user.target
